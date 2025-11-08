@@ -1,0 +1,58 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom right, #68d8ff, #ffb3ff);
+    color: #333;
+    text-align: center;
+}
+
+header {
+    padding: 25px;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+.progress-container {
+    width: 60%;
+    height: 20px;
+    background: #fff;
+    border-radius: 10px;
+    margin: 15px auto;
+}
+
+#progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #34c759;
+    border-radius: 10px;
+}
+
+.topic-card {
+    width: 60%;
+    background: white;
+    margin: 15px auto;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    align-items: center;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    background: #ff9f1c;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button.completed {
+    background: #34c759;
+    color: white;
+}
