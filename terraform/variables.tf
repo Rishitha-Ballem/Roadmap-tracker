@@ -1,19 +1,35 @@
 variable "aws_region" {
-  default = "ap-south-1"
+  description = "AWS region for deployment"
+  type        = string
+  default     = "ap-south-1"
 }
 
 variable "instance_type" {
-  default = "t2.micro"
+  description = "Type of EC2 instance"
+  type        = string
+  default     = "t2.micro"
 }
 
-variable "public_key_path" {
-  default = "~/.ssh/id_rsa.pub"
-}
-
-variable "ami_id" {
-  default = "ami-0dee22c13ea7a9a67" # Amazon Linux 2 (Mumbai region)
+variable "key_name" {
+  description = "Name of your EC2 key pair"
+  type        = string
+  default     = "ec2_Rishi"
 }
 
 variable "ecr_repo" {
-  default = "130358282811.dkr.ecr.ap-south-1.amazonaws.com/roadmap-app"
+  description = "AWS ECR Repository URI"
+  type        = string
+  default     = "130358282811.dkr.ecr.ap-south-1.amazonaws.com/roadmap-app"
+}
+
+variable "sg_name" {
+  description = "Security Group Name"
+  type        = string
+  default     = "roadmap-sg"
+}
+
+variable "instance_name" {
+  description = "Instance Name Tag"
+  type        = string
+  default     = "roadmap-app-server"
 }
