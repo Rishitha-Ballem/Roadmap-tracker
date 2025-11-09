@@ -63,41 +63,43 @@ resource "aws_instance" "roadmap_app" {
   vpc_security_group_ids      = [aws_security_group.roadmap_sg.id]
   associate_public_ip_address = true
 
-    user_data = <<-EOF
-              #!/bin/bash
-              set -e
+      user_data = <<-EOF
+    #!/bin/bash
+    set -e
 
-              # Update system
-              dnf update -y
+    # Update packages
+    yum update -y
 
-              # Install docker + aws cli
-              dnf install -y docker
-              systemctl enable docker
-              systemctl start docker
-              usermod -aG docker ec2-user
+    # Install Docker
+    yum install -y docker
+    systemctl enable docker
+    systemctl start docker
+    usermod -aG docker ec2-user
 
-              # Install AWS CLI v2 if not present
-              if ! command -v aws &> /dev/null
-              then
-                curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-                unzip awscliv2.zip
-                sudo ./aws/install
-              fi
+    # Install AWS CLI (v2)
+    if ! command -v aws &> /dev/null
+    then
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      yum install -y unzip
+      unzip awscliv2.zip
+      ./aws/install
+    fi
 
-              # Login to ECR
-              aws ecr get-login-password --region ap-south-1 \
-              | docker login --username AWS --password-stdin 130358282811.dkr.ecr.ap-south-1.amazonaws.com
+    # Login to ECR
+    aws ecr get-login-password --region ap-south-1 \
+      | docker login --username AWS --password-stdin 130358282811.dkr.ecr.ap-south-1.amazonaws.com
 
-              # Pull and run container
-              docker pull 130358282811.dkr.ecr.ap-south-1.amazonaws.com/roadmap-app:latest
+    # Pull latest image
+    docker pull 130358282811.dkr.ecr.ap-south-1.amazonaws.com/roadmap-app:latest
 
-              # Stop old containers (if redeploy)
-              docker stop $(docker ps -q) || true
-              docker rm $(docker ps -aq) || true
+    # Stop and remove old containers (safe)
+    docker ps -aq | xargs -r docker stop || true
+    docker ps -aq | xargs -r docker rm || true
 
-              # Run app
-              docker run -d -p 80:80 130358282811.dkr.ecr.ap-south-1.amazonaws.com/roadmap-app:latest
-              EOF
+    # Run container
+    docker run -d -p 80:80 130358282811.dkr.ecr.ap-south-1.amazonaws.com/roadmap-app:latest
+  EOF
+
 
   tags = {
     Name = var.instance_name
