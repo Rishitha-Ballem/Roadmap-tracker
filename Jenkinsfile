@@ -17,35 +17,33 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                script {
-                    sh "docker build -t $ECR_REPO:$IMAGE_TAG ."
-                }
+                sh "docker build -t $ECR_REPO:$IMAGE_TAG ."
             }
         }
 
         stage('ECR Login') {
             steps {
-                script {
-                    sh "aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO"
+                withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
+                    sh """
+                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
+                    """
                 }
             }
         }
 
         stage('Push to ECR') {
             steps {
-                script {
-                    sh "docker push $ECR_REPO:$IMAGE_TAG"
-                }
+                sh "docker push $ECR_REPO:$IMAGE_TAG"
             }
         }
 
         stage('Terraform Deploy to EC2') {
             steps {
-                dir("terraform/") {
-                    sh """
-                        terraform init
-                        terraform apply -auto-approve
-                    """
+                dir("terraform") {
+                    withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
+                        sh "terraform init"
+                        sh "terraform apply -auto-approve"
+                    }
                 }
             }
         }
